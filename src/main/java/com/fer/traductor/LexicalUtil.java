@@ -136,6 +136,10 @@ public class LexicalUtil {
                 return 20;
             case 24:
                 return 21;
+            case 25:
+                return -1;
+            case 26:
+                return 3;
             case -1:
                 return -1;
             default:
@@ -192,6 +196,10 @@ public class LexicalUtil {
                 return "Ciclo condicional";
             case 24:
                 return "Retorno de función";
+            case 25:
+                return "Error de sintaxis";
+            case 26:
+                return "Cadena";
             case -1:
                 return "Error de sintaxis";
             default:

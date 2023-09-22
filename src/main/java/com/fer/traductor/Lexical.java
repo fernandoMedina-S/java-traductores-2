@@ -81,6 +81,8 @@ public class Lexical {
                         this.state = 19;
                     } else if (i == '=') {
                         this.state = 20;
+                    }else if(i == '"'){
+                        this.state = 25;
                     }
                     break;
                 case 1:
@@ -122,6 +124,13 @@ public class Lexical {
                         this.state = 5;
                     } else {
                         this.state = -1;
+                    }
+                    break;
+                case 25:
+                    if(i=='"'){
+                        this.state = 26;
+                    }else{
+                        this.state = 25;
                     }
                     break;
                 default:
