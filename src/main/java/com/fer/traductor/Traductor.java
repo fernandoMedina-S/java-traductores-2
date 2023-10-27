@@ -34,7 +34,10 @@ public class Traductor {
 
                 String[] palabras = linea.split(" ");
                 for (String palabra : palabras) {
-                    tokens.add(palabra);
+                    if(!"".equals(palabra)){
+                        System.out.println("Palabra: "+palabra);
+                        tokens.add(palabra);
+                    }
                 }
                 
             }

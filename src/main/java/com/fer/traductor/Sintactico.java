@@ -30,22 +30,28 @@ public class Sintactico {
         if (token != null) {
             if (token.enum_value == Token_values.ID) {
                 // Assignment statement
-                Token nextToken = getNextToken();
-                if (nextToken != null && nextToken.enum_value == Token_values.ASSIGN) {
-                    Node assignmentNode = new Node("assignment", token.value);
+                if (tokens.get(contador) != null && tokens.get(contador).enum_value == Token_values.ASSIGN) {
+                    
+                    Node assignmentNode = new Node("assignment", tokens.get(contador).value);
+                    Node leftSideNode = parseExpression(contador-1);
+                    contador ++;
                     Node expressionNode = parseExpression(); // Right-hand side of assignment
+                    assignmentNode.children.add(leftSideNode);
                     assignmentNode.children.add(expressionNode);
                     
                     Node endOfLine = parseEndOfLine();
-                    expressionNode.children.add(endOfLine);
+                    assignmentNode.children.add(endOfLine);
                     return assignmentNode;
-                } else if (nextToken != null && (nextToken.enum_value == Token_values.EQUAL || nextToken.enum_value == Token_values.RELATION_OP)){
-                    Node comparisonNode = new Node("comparison", token.value);
+                } else if (tokens.get(contador) != null && (tokens.get(contador).enum_value == Token_values.EQUAL || tokens.get(contador).enum_value == Token_values.RELATION_OP)){
+                    Node comparisonNode = new Node("comparison", tokens.get(contador).value);
+                    Node leftExpressionNode = parseExpression(contador-1);
+                    contador++;
                     Node rightExpressionNode = parseExpression();
+                    comparisonNode.children.add(leftExpressionNode);
                     comparisonNode.children.add(rightExpressionNode);
                     
                     Node endOfLine = parseEndOfLine();
-                    rightExpressionNode.children.add(endOfLine);
+                    comparisonNode.children.add(endOfLine);
                     return comparisonNode;
                 }else{
                     // Handle error: Expected "="
@@ -55,7 +61,6 @@ public class Sintactico {
             } else if(token.enum_value == Token_values.IF){
                 return parseIfStatement();
             } else {
-                System.out.println(token.enum_value);
                 Node errorNode = new Node("Error", "Invalid statement");
                 return errorNode;
             }
@@ -103,6 +108,28 @@ public class Sintactico {
         } else if (token != null && token.enum_value == Token_values.OPEN_PARENTHESIS) {
             Node expressionNode = parseExpression();
             Token closingParenthesis = getNextToken();
+            if (closingParenthesis != null && closingParenthesis.enum_value == Token_values.CLOSE_PARENTHESIS) {
+                return expressionNode;
+            } else {
+                // Handle error: Expected ")"
+                Node errorNode = new Node("Error", "Expected )");
+                return errorNode;
+            }
+        } else {
+            // Handle error: Invalid expression
+            Node errorNode = new Node("Error", "Invalid expression");
+            return errorNode;
+        }
+    }
+    
+    private Node parseExpression(int i) {
+        Token token = tokens.get(i);
+        if (token != null && (token.enum_value == Token_values.ID || token.enum_value == Token_values.INTEGER || token.enum_value == Token_values.REAL)) {
+            
+            return new Node(token.type, token.value);
+        } else if (token != null && token.enum_value == Token_values.OPEN_PARENTHESIS) {
+            Node expressionNode = parseExpression();
+            Token closingParenthesis = tokens.get(i+1);
             if (closingParenthesis != null && closingParenthesis.enum_value == Token_values.CLOSE_PARENTHESIS) {
                 return expressionNode;
             } else {
