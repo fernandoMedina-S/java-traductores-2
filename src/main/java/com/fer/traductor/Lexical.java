@@ -146,12 +146,17 @@ public class Lexical {
         }
     }
 
-    public void getResults() {
+    public List<Token> getResults() {
+        List<Token> new_tokens = new ArrayList<>();
         int i = 0;
+        int num_val;
         for (int elem : this.states) {
+            num_val = LexicalUtil.getNumericalValue(elem);
             System.out.println("El token " + this.tokens.get(i) + " es de tipo " + LexicalUtil.getType(elem) + " " + LexicalUtil.getNumericalValue(elem));
+            new_tokens.add(new Token(LexicalUtil.getType(elem), this.tokens.get(i), num_val, LexicalUtil.getEnumValue(num_val)));
             i++;
         }
+        return new_tokens;
     }
 
     public List<String> getTokens() {

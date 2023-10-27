@@ -10,6 +10,33 @@ package com.fer.traductor;
  */
 public class LexicalUtil {
     
+    public enum Token_values {
+        ERROR,
+        INTEGER,
+        ID,
+        STRING,
+        REAL,
+        ADD_SUB,
+        DATA_TYPE,
+        MULT_DIV,
+        RELATION_OP,
+        AND,
+        OR,
+        NOT,
+        EQUAL,
+        SEMICOLON,
+        COMMA,
+        OPEN_PARENTHESIS,
+        CLOSE_PARENTHESIS,
+        OPEN_BRACKETS,
+        CLOSE_BRACKETS,
+        ASSIGN,
+        IF,
+        WHILE,
+        ELSE,
+        RETURN
+    }
+    
     public static Boolean isType(String forAnalize){
         switch (forAnalize) {
             case "int":
@@ -81,6 +108,61 @@ public class LexicalUtil {
                 return 24;  
             default:
                 return 0;
+        }
+    }
+    
+    public static Token_values getEnumValue(int numValue) {
+        switch (numValue) {
+            case 0:
+                return Token_values.ID;
+            case 1:
+                return Token_values.INTEGER;
+            case 2:
+                return Token_values.REAL;
+            case 3:
+                return Token_values.STRING;
+            case 4:
+                return Token_values.DATA_TYPE;
+            case 5:
+                return Token_values.ADD_SUB;
+            case 6:
+                return Token_values.MULT_DIV;
+            case 7:
+                return Token_values.RELATION_OP;
+            case 8:
+                return Token_values.OR;
+            case 9:
+                return Token_values.AND;
+            case 10:
+                return Token_values.NOT;
+            case 11:
+                return Token_values.EQUAL;
+            case 12:
+                return Token_values.SEMICOLON;
+            case 13:
+                return Token_values.COMMA;
+            case 14:
+                return Token_values.OPEN_PARENTHESIS;
+            case 15:
+                return Token_values.CLOSE_PARENTHESIS;
+            case 16:
+                return Token_values.OPEN_BRACKETS;
+            case 17:
+                return Token_values.CLOSE_BRACKETS;
+            case 18:
+                return Token_values.ASSIGN;
+            case 19:
+                return Token_values.IF;
+            case 20:
+                return Token_values.WHILE;
+            case 21:
+                return Token_values.RETURN;
+            case 22:
+                return Token_values.ELSE;
+            case -1:
+                return Token_values.ERROR;
+            default:
+                return Token_values.ERROR;
         }
     }
     

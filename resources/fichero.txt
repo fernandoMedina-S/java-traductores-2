@@ -1,4 +1,6 @@
-uno dos 1 1.1
-while
-== = ! int
-"XD"
+a = b ;
+b = X ;
+q == 2.25 ;
+if d == f {
+w = z ;
+}

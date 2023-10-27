@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +21,11 @@ public class Traductor {
     public static void main(String[] args) throws IOException {
         String Entrada = "resources/fichero.txt";
         String Salida = "resources/fichero1.txt";
-
+       
         List<String> tokens = new ArrayList<>();
         Lexical lexical;
+        List<Token> tokens_analized;
+        Sintactico sintactico;
 
         try (BufferedReader lectura = new BufferedReader(new FileReader(Entrada))) {
             String linea;
@@ -39,7 +42,11 @@ public class Traductor {
             lexical = new Lexical(tokens);
             
             lexical.analize();
-            lexical.getResults();
+            tokens_analized = lexical.getResults();
+            
+            sintactico = new Sintactico(tokens_analized);
+            Node root = sintactico.parse();
+            sintactico.printTree(root, "");
 
         } catch (Exception e) {
             System.out.println(e);

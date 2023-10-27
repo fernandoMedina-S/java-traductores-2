@@ -1,0 +1,326 @@
+package com.fer.traductor;
+
+import java.util.List;
+import com.fer.traductor.LexicalUtil.Token_values;
+
+public class Sintactico {
+    List<Token> tokens;
+    private int contador;
+
+    public Sintactico(List<Token> tokens) {
+        this.tokens = tokens;
+        this.contador = 0;
+    }
+    
+    public Node parse() {
+        return parseProgram();
+    }
+    
+    private Node parseProgram() {
+        Node programNode = new Node("program", "");
+        while (contador < tokens.size()) {
+            Node statementNode = parseStatement();
+            programNode.children.add(statementNode);
+        }
+        return programNode;
+    }
+    
+    private Node parseStatement() {
+        Token token = getNextToken();
+        if (token != null) {
+            if (token.enum_value == Token_values.ID) {
+                // Assignment statement
+                Token nextToken = getNextToken();
+                if (nextToken != null && nextToken.enum_value == Token_values.ASSIGN) {
+                    Node assignmentNode = new Node("assignment", token.value);
+                    Node expressionNode = parseExpression(); // Right-hand side of assignment
+                    assignmentNode.children.add(expressionNode);
+                    
+                    Node endOfLine = parseEndOfLine();
+                    expressionNode.children.add(endOfLine);
+                    return assignmentNode;
+                } else if (nextToken != null && (nextToken.enum_value == Token_values.EQUAL || nextToken.enum_value == Token_values.RELATION_OP)){
+                    Node comparisonNode = new Node("comparison", token.value);
+                    Node rightExpressionNode = parseExpression();
+                    comparisonNode.children.add(rightExpressionNode);
+                    
+                    Node endOfLine = parseEndOfLine();
+                    rightExpressionNode.children.add(endOfLine);
+                    return comparisonNode;
+                }else{
+                    // Handle error: Expected "="
+                    Node errorNode = new Node("Error", "Expected =");
+                    return errorNode;
+                }
+            } else if(token.enum_value == Token_values.IF){
+                return parseIfStatement();
+            } else {
+                System.out.println(token.enum_value);
+                Node errorNode = new Node("Error", "Invalid statement");
+                return errorNode;
+            }
+        }
+        return null;
+    }
+    
+    private Node parseIfStatement() {
+        Node ifNode = new Node("ifStatement", "if");
+        Node conditionNode = parseComparison();
+        Node blockNode = parseBlock();
+        ifNode.children.add(conditionNode);
+        ifNode.children.add(blockNode);
+        return ifNode;
+    }
+    
+    private Node parseBlock() {
+        Node blockNode = new Node("block", "");
+        Token openBrace = getNextToken();
+        if (openBrace != null && openBrace.enum_value == Token_values.OPEN_BRACKETS) {
+            while (tokens.get(contador).enum_value != Token_values.CLOSE_BRACKETS) {
+                Node statementNode = parseStatement();
+                blockNode.children.add(statementNode);
+            }
+            Token closeBrace = getNextToken();
+            if (closeBrace != null && closeBrace.enum_value == Token_values.CLOSE_BRACKETS) {
+                return blockNode;
+            } else {
+                // Handle error: Missing closing brace
+                Node errorNode = new Node("Error", "Expected }");
+                return errorNode;
+            }
+        } else {
+            // Handle error: Missing opening brace
+            Node errorNode = new Node("Error", "Expected {");
+            return errorNode;
+        }
+    }
+    
+    private Node parseExpression() {
+        Token token = getNextToken();
+        if (token != null && (token.enum_value == Token_values.ID || token.enum_value == Token_values.INTEGER || token.enum_value == Token_values.REAL)) {
+            
+            return new Node(token.type, token.value);
+        } else if (token != null && token.enum_value == Token_values.OPEN_PARENTHESIS) {
+            Node expressionNode = parseExpression();
+            Token closingParenthesis = getNextToken();
+            if (closingParenthesis != null && closingParenthesis.enum_value == Token_values.CLOSE_PARENTHESIS) {
+                return expressionNode;
+            } else {
+                // Handle error: Expected ")"
+                Node errorNode = new Node("Error", "Expected )");
+                return errorNode;
+            }
+        } else {
+            // Handle error: Invalid expression
+            Node errorNode = new Node("Error", "Invalid expression");
+            return errorNode;
+        }
+    }
+    
+    private Node parseComparison() {
+        Node leftExpressionNode = parseExpression();
+        Token opToken = getNextToken();
+        if (opToken != null && (opToken.enum_value == Token_values.EQUAL || opToken.enum_value == Token_values.RELATION_OP)) {
+            Node comparisonNode = new Node("comparison", opToken.value);
+            Node rightExpressionNode = parseExpression(); // Right-hand side of the comparison
+            comparisonNode.children.add(leftExpressionNode);
+            comparisonNode.children.add(rightExpressionNode);
+            return comparisonNode;
+        } else {
+            // Handle error: Invalid comparison operator
+            Node errorNode = new Node("Error", "Invalid comparision operator");
+            System.out.println(opToken.enum_value);
+            return errorNode;
+        }
+    }
+    
+    private Node parseEndOfLine(){
+        Token end = getNextToken();
+        if(end != null && end.enum_value == Token_values.SEMICOLON){
+            Node endOfLine = new Node("Fin del linea", end.value);
+            return endOfLine;
+        }else {
+            // Handle error: Expected end of line
+            Node errorNode = new Node("Error", "Expected ;");
+            return errorNode;
+        }
+    }
+    
+    
+    private Token getNextToken() {
+        if (contador < tokens.size()) {
+            return tokens.get(contador++);
+        }
+        return null;
+    }
+
+    public boolean isLibreria(String token) {
+        return token.equals("#include<iostream>");
+    }
+    public boolean isNumero(String token) {
+    try {
+         if (token.equals("main")) {
+            return true;
+        }
+         if(token.equals("1")){
+          //double parsedValue = Double.parseDouble(token); 
+          return true;
+         }
+         else{
+             System.out.println("error");
+         }
+        
+       
+    } catch (NumberFormatException e) {
+       
+    }
+    return false;
+}
+
+    
+    public boolean isOperador(String token) {
+        String[] tipos = new String[]{"+", "-", "*", "/"};
+        for (String tipo : tipos) {
+            if (token.equals(tipo)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isTipo(String token) {
+        String[] tipos = new String[]{"Void", "bool", "char", "int", "float"};
+        for (String tipo : tipos) {
+            if (token.equals(tipo)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+     public static Boolean isRelType(String forAnalize){
+        switch (forAnalize) {
+            case "<":
+                return true;
+            case ">":
+                return true;
+            case "<=":
+                return true;
+            case ">=":
+                return true;    
+            default:
+                return false;
+        }
+    }
+    
+    public static int isLogicOp(String forAnalize){
+        switch (forAnalize) {
+            case "&&":
+                return 10;
+            case "||":
+                return 11;
+            case "!":
+                return 12;   
+            default:
+                return 0;
+        }
+    }
+    
+    public static Boolean isEqualOp(String forAnalize){
+        switch (forAnalize) {
+            case "==":
+                return true;
+            case "!=":
+                return true;  
+            default:
+                return false;
+        }
+    }
+    
+    public static int isConditionalOp(String forAnalize){
+        switch (forAnalize) {
+            case "if":
+                return 21;
+            case "else":
+                return 22;  
+            default:
+                return 0;
+        }
+    }
+    
+    public static Boolean  isReservedWord(String forAnalize){
+        switch (forAnalize) {
+            case "while":
+                return true;
+            case "return":
+                return true;  
+            default:
+                return false;
+        }
+    }
+    public void corchetes(String palabra,int cont){
+        
+    }
+    public void parentesis(String palabra,int cont){
+        cont++;
+         var siguienteToken2=tokens.get(cont);
+        if(palabra.equals("("))
+            System.out.println("palabra correcta"+palabra);
+            if(siguienteToken2.equals(")")){
+                contador++;
+                var siguienteToken3=tokens.get(contador);
+                corchetes(siguienteToken3.value,contador);
+                
+            }
+        
+        
+    }
+    
+    public static void printTree(Node node, String indent) {
+        System.out.println(indent + node.type + " " + node.value);
+        for (Node child : node.children) {
+            if (child != null)
+                printTree(child, indent + "  ");
+        }
+    }
+    
+
+    public void analizar() {
+        
+        for(int i=0;i<this.tokens.size();i++){
+            System.out.println(this.tokens.get(i));
+        }
+        
+        
+
+        String tokenActual = tokens.get(contador).value;
+
+        if (isLibreria(tokenActual)) {
+            System.out.println("Libreria aceptada: " + tokenActual);
+            contador++;
+
+            if (contador >= tokens.size()) {
+                System.err.println("Error: No se encontro un tipo de dato despues de la libreria");
+                return;
+            }
+
+            String siguienteToken = tokens.get(contador).value;
+
+            if (isTipo(siguienteToken)) {
+                System.out.println("Tipo de dato aceptado: " + siguienteToken);
+                contador++;
+                String siguienteToken1 = tokens.get(contador).value;
+                if(isNumero(siguienteToken1)){
+                     System.out.println("Tipo de dato aceptado: " + siguienteToken1);
+                     contador++;
+                     String siguienteToken2 = tokens.get(contador).value;
+                     parentesis(siguienteToken2,contador);
+                }
+            } else {
+                System.err.println("Error: No se encontro un tipo de dato despues de la libreria");
+            }
+        } else {
+            System.err.println("Error: No se encontro un tipo de dato despues de la libreria");
+        }
+    }
+}
