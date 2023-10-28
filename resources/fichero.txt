@@ -1,6 +1,7 @@
 a = b ;
 i = X ;
 q == 2.25 ;
-if d == f {
+while d < f {
     w = z ;
+    f = r ;
 }

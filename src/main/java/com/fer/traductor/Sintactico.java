@@ -60,7 +60,9 @@ public class Sintactico {
                 }
             } else if(token.enum_value == Token_values.IF){
                 return parseIfStatement();
-            } else {
+            } else if(token.enum_value == Token_values.WHILE){
+                return parseWhileStatement();
+                }else {
                 Node errorNode = new Node("Error", "Invalid statement");
                 return errorNode;
             }
@@ -75,6 +77,27 @@ public class Sintactico {
         ifNode.children.add(conditionNode);
         ifNode.children.add(blockNode);
         return ifNode;
+    }
+    
+    private Node psrseVariableDeclaration(String type){
+        Node DataNode = new Node("Declaration", type);
+        Token nextToken = getNextToken();
+        if(nextToken != null && nextToken.enum_value == Token_values.ID){
+            // CRear nuevo nodo con el id
+            // Asiganrselo a la lista del tipo de dato
+            // Detectar punto y coma
+            
+        }
+        return DataNode;
+    }
+    
+    private Node parseWhileStatement() {
+        Node WhileNode = new Node("WhileStatement", "While");
+        Node conditionNode = parseComparison();
+        Node blockNode = parseBlock();
+        WhileNode.children.add(conditionNode);
+        WhileNode.children.add(blockNode);
+        return WhileNode;
     }
     
     private Node parseBlock() {
