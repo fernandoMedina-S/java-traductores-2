@@ -4,4 +4,5 @@ q == 2.25 ;
 while d < f {
     w = z ;
     f = r ;
+    int i = 0 ;
 }

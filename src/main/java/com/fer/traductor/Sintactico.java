@@ -62,7 +62,9 @@ public class Sintactico {
                 return parseIfStatement();
             } else if(token.enum_value == Token_values.WHILE){
                 return parseWhileStatement();
-                }else {
+            } else if(token.enum_value == Token_values.DATA_TYPE){
+                return parseVariableDeclaration(token.value);
+            }else {
                 Node errorNode = new Node("Error", "Invalid statement");
                 return errorNode;
             }
@@ -79,13 +81,28 @@ public class Sintactico {
         return ifNode;
     }
     
-    private Node psrseVariableDeclaration(String type){
+    
+    
+    private Node parseVariableDeclaration(String type){
         Node DataNode = new Node("Declaration", type);
         Token nextToken = getNextToken();
         if(nextToken != null && nextToken.enum_value == Token_values.ID){
             // CRear nuevo nodo con el id
+            Node IDNode = new Node("Identifier", nextToken.value);
             // Asiganrselo a la lista del tipo de dato
-            // Detectar punto y coma
+            DataNode.children.add(IDNode);
+            nextToken = getNextToken();
+            if(nextToken != null && nextToken.enum_value == Token_values.ASSIGN){
+                Node expression = parseExpression();
+                DataNode.children.add(expression);
+                Node endOfLine = parseEndOfLine();
+                DataNode.children.add(endOfLine);
+                return DataNode;
+            }else if(nextToken != null && nextToken.enum_value == Token_values.SEMICOLON){
+                
+            }else{
+                //Error
+            }
             
         }
         return DataNode;
