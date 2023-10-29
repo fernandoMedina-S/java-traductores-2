@@ -91,17 +91,21 @@ public class Sintactico {
             Node IDNode = new Node("Identifier", nextToken.value);
             // Asiganrselo a la lista del tipo de dato
             DataNode.children.add(IDNode);
-            nextToken = getNextToken();
-            if(nextToken != null && nextToken.enum_value == Token_values.ASSIGN){
+            if(tokens.get(contador) != null && tokens.get(contador).enum_value == Token_values.ASSIGN){
+                nextToken = getNextToken();
                 Node expression = parseExpression();
                 DataNode.children.add(expression);
                 Node endOfLine = parseEndOfLine();
                 DataNode.children.add(endOfLine);
                 return DataNode;
-            }else if(nextToken != null && nextToken.enum_value == Token_values.SEMICOLON){
-                
+            }else if(tokens.get(contador) != null && tokens.get(contador).enum_value == Token_values.SEMICOLON){
+                Node endOfLine = parseEndOfLine();
+                DataNode.children.add(endOfLine);
+                return DataNode;
             }else{
                 //Error
+                Node errorNode = new Node("Error", "Invalid declaration");
+                return errorNode;
             }
             
         }
