@@ -114,7 +114,7 @@ public class interfazCompilador extends javax.swing.JFrame {
        String textoIngresado=txtArea1.getText();
       
       
-    String[] area = textoIngresado.split(" ");
+    String[] area = textoIngresado.split("\\s+");
     Lexical lexical;
     Sintactico sintactico;
     List<Token> tokens_analized;
@@ -123,7 +123,9 @@ public class interfazCompilador extends javax.swing.JFrame {
     
     try {
         for (String palabra : area) {
-            tokens.add(palabra);
+            if(!"".equals(palabra)){
+                tokens.add(palabra);
+            }
         }
         //String bandera="false";
         lexical = new Lexical(tokens);
@@ -157,7 +159,7 @@ public class interfazCompilador extends javax.swing.JFrame {
     
    
     String textoIngresado = txtArea1.getText();
-    String[] area = textoIngresado.split(" ");
+    String[] area = textoIngresado.split("\\s+");
     String bandera="false";
     Lexical lexical;
     List<Token> tokens_analyzed;

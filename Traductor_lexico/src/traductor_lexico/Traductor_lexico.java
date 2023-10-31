@@ -87,7 +87,7 @@ public class Traductor_lexico {
                 System.out.println("hola");
                 
                 for (String palabra : palabras) {
-                    if(!palabra.equals("")){
+                    if(!"".equals(palabra)){
                         tokens.add(palabra);
                     }
                     
