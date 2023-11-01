@@ -5,4 +5,5 @@ while d < f {
     w = z ;
     f = r ;
     int i = XD ;
+    float z = 0 ;
 }

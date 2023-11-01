@@ -74,7 +74,7 @@ public class Sintactico {
     
     private Node parseIfStatement() {
         Node ifNode = new Node("ifStatement", "if");
-        Node conditionNode = parseComparison();
+        Node conditionNode = parseComparisonBlock();
         Node blockNode = parseBlock();
         ifNode.children.add(conditionNode);
         ifNode.children.add(blockNode);
@@ -114,11 +114,32 @@ public class Sintactico {
     
     private Node parseWhileStatement() {
         Node WhileNode = new Node("WhileStatement", "While");
-        Node conditionNode = parseComparison();
+        Node conditionNode = parseComparisonBlock();
         Node blockNode = parseBlock();
         WhileNode.children.add(conditionNode);
         WhileNode.children.add(blockNode);
         return WhileNode;
+    }
+    
+    private Node parseComparisonBlock(){
+        Node blockNode = new Node("Comparison Block", "");
+        Token openParenthesis = getNextToken();
+        if(openParenthesis != null && openParenthesis.enum_value == Token_values.OPEN_PARENTHESIS){
+            Node compNode = parseComparison();
+            blockNode.children.add(compNode);
+            Token closeParenthesis = getNextToken();
+            if (closeParenthesis != null && closeParenthesis.enum_value == Token_values.CLOSE_PARENTHESIS) {
+                    return blockNode;
+            } else {
+                    // Handle error: Missing closing brace
+                    Node errorNode = new Node("Error", "Expected )");
+                    return errorNode;
+            }
+        } else {
+            // Handle error: Missing opening brace
+            Node errorNode = new Node("Error", "Expected (");
+            return errorNode;
+        }
     }
     
     private Node parseBlock() {
