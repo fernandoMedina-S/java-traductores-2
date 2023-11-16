@@ -83,6 +83,7 @@ public class Sintactico {
     
     
     
+    
     private Node parseVariableDeclaration(String type){
         Node DataNode = new Node("Declaration", type);
         Token nextToken = getNextToken();
